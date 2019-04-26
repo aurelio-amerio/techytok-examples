@@ -1,0 +1,9 @@
+version: '3'
+services:
+  julia-docker:
+    image: 'aureamerio/techytok-examples:julia-docker'
+    volumes:
+      - './:/opt/project'
+    ports:
+      - '7776:22'
+      - '7777:7777'
