@@ -7,7 +7,7 @@ using SharedArrays
 using ProgressMeter
 using Interpolations
 
-include("$(@__DIR__)/SubModule.jl")
+include("SubModule.jl")
 using .SubMod1
 
 function func1()
