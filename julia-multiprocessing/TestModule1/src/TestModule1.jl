@@ -1,3 +1,5 @@
+__precompile__()
+
 module TestModule1
 
 export func1, func2, test_interp, print_nprocs
@@ -40,6 +42,7 @@ function create_interp()
     update!(p, 0)
     pr = SharedArray{Int}(1)
     @sync @distributed for i = 1:length(x)
+        #some really hard computations
         sleep(0.01)
         y[i] = sin(x[i])
         pr[1] += 1
