@@ -16,7 +16,7 @@ function func1()
     n = 200000
     arr = SharedArray{Float64}(n)
     @sync @distributed for i = 1:n
-        arr[i] = rand()
+        arr[i] = i^2
     end
     res = sum(arr)
     return res
