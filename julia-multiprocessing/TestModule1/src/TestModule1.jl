@@ -40,13 +40,11 @@ function create_interp()
     @info "Computing Interpolation..."
     p = Progress(length(x), "Progress: ")
     update!(p, 0)
-    pr = SharedArray{Int}(1)
     @sync @distributed for i = 1:length(x)
         #some really hard computations
         sleep(0.01)
         y[i] = sin(x[i])
-        pr[1] += 1
-        update!(p, pr[1])
+        next!(p)
     end
 
 
