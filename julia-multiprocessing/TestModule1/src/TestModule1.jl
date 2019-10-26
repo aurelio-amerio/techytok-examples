@@ -32,20 +32,17 @@ function func2()
     return res
 end
 
+function sine_func(x)
+    sleep(22*1e-3)
+    return sin(x)
+end
+
 function create_interp()
     @info "create_interp"
     x = range(0, stop = 10, length = 1000)
 
-    y = SharedArray{Float64}(length(x))
     @info "Computing Interpolation..."
-    p = Progress(length(x), "Progress: ")
-    update!(p, 0)
-    @sync @distributed for i = 1:length(x)
-        #some really hard computations
-        sleep(0.01)
-        y[i] = sin(x[i])
-        next!(p)
-    end
+    y = @showprogress pmap(sine_func, x, batch_size=10)
 
 
     knots = (x,)
