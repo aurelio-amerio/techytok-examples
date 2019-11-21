@@ -255,7 +255,7 @@ function create_animation(
 
 end
 #%%
-create_animation()
+create_animation(zoom_max=1e10, n_frames = 200, filename="mandelbrot2_1e11" )
 #%%
 mult = 1
 width = mult * 1024
