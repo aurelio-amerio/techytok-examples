@@ -42,8 +42,8 @@ mutable struct FractalData{T<:Real}
         fractal = :none,
         maxIter = 1500,
         colormap = cgrad(:inferno),
-        scale_function::Function = x -> x
-    ) where T <: Real
+        scale_function::Function = x -> x,
+    ) where {T<:Real}
         img = zeros(T, height, width)
         if fractal != :none
             img = fractal
@@ -58,11 +58,72 @@ mutable struct FractalData{T<:Real}
             img,
             maxIter,
             colormap,
-            scale_function
+            scale_function,
         )
     end
 end
 
+function get_coords(fractal::FractalData)
+    return fractal.xmin, fractal.xmax, fractal.ymin, fractal.ymax
+end
+
+# functions to move on the fractal
+function move_center!(fractal::FractalData, nStepsX::Int, nStepsY::Int)
+
+    if nStepsX != 0
+        xc = (fractal.xmax + fractal.xmin) / 2
+        width = fractal.xmax - fractal.xmin
+        dx = width / 100
+
+        xc += nStepsX * dx
+        fractal.xmin = xc - width / 2
+        fractal.xmax = xc + width / 2
+    end
+    if nStepsY != 0
+        yc = (fractal.ymax + fractal.ymin) / 2
+        height = fractal.ymax - fractal.ymin
+        dy = height / 100
+
+        yc += nStepsY * dy
+        fractal.ymin = yc - height / 2
+        fractal.ymax = yc + height / 2
+    end
+    return preview_fractal(fractal) #preview changes
+end
+
+function move_up!(fractal::FractalData, nSteps::Int = 1)
+    move_center!(fractal::FractalData, 0, nSteps)
+end
+
+function move_down!(fractal::FractalData, nSteps::Int = 1)
+    move_center!(fractal::FractalData, 0, -nSteps)
+end
+
+function move_left!(fractal::FractalData, nSteps::Int = 1)
+    move_center!(fractal::FractalData, -nSteps, 0)
+end
+
+function move_right!(fractal::FractalData, nSteps::Int = 1)
+    move_center!(fractal::FractalData, nSteps, 0)
+end
+
+function zoom!(fractal::FractalData, zoom_factor::Real)
+    xc = (fractal.xmax + fractal.xmin) / 2
+    width = fractal.xmax - fractal.xmin
+    width /= zoom_factor
+
+    fractal.xmin = xc - width / 2
+    fractal.xmax = xc + width / 2
+
+    yc = (fractal.ymax + fractal.ymin) / 2
+    height = fractal.ymax - fractal.ymin
+    height /= zoom_factor
+
+    fractal.ymin = yc - height / 2
+    fractal.ymax = yc + height / 2
+
+    return preview_fractal(fractal) #preview changes
+end
 
 # custom colorbars, generate them using https://cssgradient.io/
 
@@ -81,12 +142,12 @@ end
 function alien_space(nRepeat::Int = 1)
     return ColorGradient(repeat(
         ["#1a072a", "#ff3e24", "#ffa805", "#7b00ff"],
-        nRepeat
+        nRepeat,
     ))
 end
 
 function cycle_cmap(cmap::Symbol, nRepeat::Int = 1)
-    return ColorGradient(repeat(cgrad(cmap).colors, 5))
+    return ColorGradient(repeat(cgrad(cmap).colors, nRepeat))
 end
 
 # compute mandelbrot
@@ -123,7 +184,6 @@ function computeMandelbrot(
     width::Int = 800,
     height::Int = 600,
     maxIter::Int = 1000,
-    zoom::Real = 1,
     verbose = true,
 )
     if verbose
@@ -138,26 +198,8 @@ function computeMandelbrot(
     dx = (xmax - xmin) / width
     dy = (ymax - ymin) / height
 
-    x_arr = zeros(typeof(xmin), width)
-    y_arr = zeros(typeof(ymin), height)
-
-    if zoom != 1 # redefine bounds according to zoom
-        dx /= zoom
-        dy /= zoom
-        xmin = xc - dx * width / 2
-        xmax = xc + dx * width / 2
-        ymin = yc - dy * height / 2
-        ymax = yc + dy * height / 2
-
-        x_arr .= collect(range(xmin, stop = xmax, length = width))
-        y_arr .= collect(range(ymin, stop = ymax, length = height))
-    else
-        x_arr .= collect(range(xmin, stop = xmax, length = width))
-        y_arr .= collect(range(ymin, stop = ymax, length = height))
-    end
-
-    # x_arr = range(xmin, stop = xmax, length = width)
-    # y_arr = range(ymin, stop = ymax, length = height)
+    x_arr = range(xmin, stop = xmax, length = width)
+    y_arr = range(ymin, stop = ymax, length = height)
 
     pixels = zeros(typeof(xmin), height, width) #pixels[y,x]
 
@@ -179,11 +221,7 @@ function computeMandelbrot(
     return pixels
 end
 
-function computeMandelbrot!(
-    fractal_data::FractalData;
-    zoom=1,
-    verbose = true,
-)
+function computeMandelbrot!(fractal_data::FractalData; verbose = true)
     pixels = computeMandelbrot(
         fractal_data.xmin,
         fractal_data.xmax,
@@ -192,7 +230,6 @@ function computeMandelbrot!(
         fractal_data.width,
         fractal_data.height,
         fractal_data.maxIter,
-        zoom,
         verbose,
     )
     fractal_data.fractal = pixels
@@ -201,7 +238,9 @@ end
 
 function display_fractal(
     fractal::Matrix;
-    colormap = :magma, scale = :linear, filename = :none
+    colormap = :magma,
+    scale = :linear,
+    filename = :none,
 )
     img = deepcopy(fractal)
     if scale == :log
@@ -230,22 +269,41 @@ function display_fractal(
 end
 
 # version using the structure
-function display_fractal(fractal::FractalData; scale=:none, filename = :none)
+function display_fractal(fractal::FractalData; scale = :none, filename = :none)
     if scale == :none
         display_fractal(
             fractal.fractal,
             colormap = fractal.colormap,
             scale = fractal.scale_function,
-            filename = filename
+            filename = filename,
         )
     else
         display_fractal(
             fractal.fractal,
             colormap = fractal.colormap,
             scale = scale,
-            filename = filename
+            filename = filename,
         )
     end
 end
 
+function preview_fractal(fractal_data::FractalData; scale = :linear)
+    pixels = computeMandelbrot(
+        fractal_data.xmin,
+        fractal_data.xmax,
+        fractal_data.ymin,
+        fractal_data.ymax,
+        w_pw,
+        h_pw,
+        fractal_data.maxIter,
+        true,
+    )
+    return display_fractal(
+        pixels,
+        colormap = fractal_data.colormap,
+        scale = scale,
+        filename = :none,
+    )
 end
+
+end # end module

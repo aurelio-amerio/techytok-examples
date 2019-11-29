@@ -3,6 +3,25 @@ using .Mandelbrot
 using Plots
 
 #%%
+# starting point
+cmap = Mandelbrot.cycle_cmap(:inferno, 5)
+xmin = -2.2
+xmax = 0.8
+ymin = -1.2
+ymax = 1.2
+
+fractal0_data = Mandelbrot.FractalData{Float64}(
+    xmin,
+    xmax,
+    ymin,
+    ymax,
+    width = Mandelbrot.w_4k,
+    height = Mandelbrot.h_4k,
+    colormap = cmap,
+    maxIter = 1500,
+    scale_function = x->x
+)
+
 cmap1 = Mandelbrot.cycle_cmap(:inferno, 5)
 xmin1 = -1.744453831814658538530
 xmax1 = -1.744449945239591698236
@@ -93,13 +112,13 @@ Mandelbrot.computeMandelbrot!(fractal1_data)
 
 Mandelbrot.display_fractal(
     fractal1_data,
-    filename = "mandelbrot-fractal/images/mandelbrot1.png"
+    # filename = "mandelbrot-fractal/images/mandelbrot1.png"
 )
 
 Mandelbrot.display_fractal(
     fractal1_data,
     scale = log,
-    filename = "mandelbrot-fractal/images/mandelbrot1b.png"
+    # filename = "mandelbrot-fractal/images/mandelbrot1b.png"
 )
 
 #%% number 2
@@ -107,7 +126,7 @@ Mandelbrot.computeMandelbrot!(fractal2_data)
 
 Mandelbrot.display_fractal(
     fractal2_data,
-    filename = "mandelbrot-fractal/images/mandelbrot2.png"
+    # filename = "mandelbrot-fractal/images/mandelbrot2.png"
 )
 
 #%% number 3
@@ -115,7 +134,7 @@ Mandelbrot.computeMandelbrot!(fractal3_data)
 
 Mandelbrot.display_fractal(
     fractal3_data,
-    filename = "mandelbrot-fractal/images/mandelbrot3d.png"
+    # filename = "mandelbrot-fractal/images/mandelbrot3d.png"
 )
 
 #%% number 4
@@ -123,6 +142,14 @@ Mandelbrot.computeMandelbrot!(fractal4_data)
 
 Mandelbrot.display_fractal(
     fractal4_data,
-    filename = "mandelbrot-fractal/images/mandelbrot4.png"
+    # filename = "mandelbrot-fractal/images/mandelbrot4.png"
 )
+#%% navigation
+Mandelbrot.preview_fractal(fractal0_data, scale = :linear)
+Mandelbrot.move_center!(fractal0_data, -5, 0)
+Mandelbrot.zoom!(fractal0_data, 0.9)
+Mandelbrot.get_coors(fractal0_data)
 #%%
+Mandelbrot.computeMandelbrot!(fractal0_data)
+fractal1_data.colormap = Mandelbrot.cycle_cmap(:viridis, 1)
+Mandelbrot.display_fractal(fractal0_data)
