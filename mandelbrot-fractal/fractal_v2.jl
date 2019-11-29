@@ -14,6 +14,26 @@ h_HD = 1080
 w_4k = 3840
 h_4k = 2160
 
+# custom colorbars, generate them using https://cssgradient.io/
+
+function pumpkin(nRepeat::Int = 1)
+    return ColorGradient(repeat([:black, :red, :orange], nRepeat))
+end
+
+function ice(nRepeat::Int = 1)
+    return ColorGradient(repeat(["#193e7c", "#dde2ff"], nRepeat))
+end
+
+function deep_space(nRepeat::Int = 1)
+    return ColorGradient(repeat(["#000000", "#193e7c", "#dde2ff"], nRepeat))
+end
+
+function cyclic_inferno(nRepeat::Int = 1)
+    return ColorGradient(repeat(["#1a072a", "#ff3e24", "#ffa805", "#7b00ff"], nRepeat))
+end
+
+# compute mandelbrot
+
 function mandelbrotBoundCheck(
     cr::T,
     ci::T,
@@ -112,8 +132,6 @@ function displayMandelbrot(
     maxIter::Int = 1000,
     zoom::Real = 1,
     colormap = :magma,
-    nRepeat::Int = 1,
-    limitPaletteLength = false,
     scale = :linear,
     filename = :none,
     verbose = true,
@@ -137,11 +155,10 @@ function displayMandelbrot(
     elseif typeof(scale) <: Function
         img = scale.(img)
     end
-    colorgrad = repeat_colorgrad(colormap, nRepeat, limitPaletteLength)
     res = heatmap(
         img,
         colorbar = :none,
-        color = colorgrad,
+        color = colormap,
         axis = false,
         size = (width, height),
         grid = false,
@@ -153,20 +170,6 @@ function displayMandelbrot(
     return res
 end
 
-function repeat_colorgrad(cmap, nRepeat::Int, limitPaletteLength = false)
-    colorgrad = cgrad(cmap)
-    color_array = repeat(colorgrad.colors, nRepeat)
-    values_array = repeat(colorgrad.values, nRepeat)
-    if limitPaletteLength
-        return ColorGradient(
-            color_array[1:nRepeat:length(color_array)],
-            values_array[1:nRepeat:length(values_array)],
-        )
-    else
-        return ColorGradient(color_array, values_array)
-    end
-end
-
 #%%
 cmap1 = :inferno
 xmin1 = -1.744453831814658538530
@@ -175,12 +178,16 @@ ymin1 = 0.022017835126305555133
 ymax1 = 0.022020017997233506531
 
 cmap2 = :ice
+scale2 = :log
+maxIter2 = 5000
 xmin2 = 0.308405876790033128474
 xmax2 = 0.308405910247503605302
 ymin2 = 0.025554220954294027410
 ymax2 = 0.025554245987221578418
 
-cmap3 = :fire
+cmap3 = pumpkin(4)
+scale3 = x -> x^-5
+maxIter3 = 5000
 xmin3 = 0.307567454839614329536
 xmax3 = 0.307567454903142214608
 ymin3 = 0.023304267108419154581
@@ -191,15 +198,18 @@ xmax3b = BigFloat("0.307567454903142214608")
 ymin3b = BigFloat("0.023304267108419154581")
 ymax3b = BigFloat("0.023304267156089095573")
 
-xmin4=0.2503006273651145643691
-xmax4=0.2503006273651201870891
-ymin4=0.0000077612880963380370
-ymax4=0.0000077612881005550770
+cmap4 = cyclic_inferno(50)
+scale4 = x -> x^-5
+maxIter4 = 50000
+xmin4 = 0.2503006273651145643691
+xmax4 = 0.2503006273651201870891
+ymin4 = 0.0000077612880963380370
+ymax4 = 0.0000077612881005550770
 
-xmin4b=BigFloat("0.2503006273651145643691")
-xmax4b=BigFloat("0.2503006273651201870891")
-ymin4b=BigFloat("0.0000077612880963380370")
-ymax4b=BigFloat("0.0000077612881005550770")
+xmin4b = BigFloat("0.2503006273651145643691")
+xmax4b = BigFloat("0.2503006273651201870891")
+ymin4b = BigFloat("0.0000077612880963380370")
+ymax4b = BigFloat("0.0000077612881005550770")
 
 
 
@@ -212,11 +222,10 @@ displayMandelbrot(
     ymax = ymax4b,
     width = w_lr,
     height = h_lr,
-    colormap = :inferno,
-    nRepeat = 4,
-    limitPaletteLength = true,
-    maxIter = 50000,
+    colormap = cmap4,
+    maxIter = maxIter4,
     verbose = true,
-    scale = :log,
-    filename = "mandelbrot-fractal/images/mandelbrot4.png",
+    scale = scale4,
+    # filename = "mandelbrot-fractal/images/mandelbrot3b.png",
 )
+#%%
