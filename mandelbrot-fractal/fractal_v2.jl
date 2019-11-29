@@ -32,6 +32,10 @@ function cyclic_inferno(nRepeat::Int = 1)
     return ColorGradient(repeat(["#1a072a", "#ff3e24", "#ffa805", "#7b00ff"], nRepeat))
 end
 
+function cycle_cmap(cmap::Symbol, nRepeat::Int=1)
+    return ColorGradient(repeat(cgrad(cmap).colors, 5))
+end
+
 # compute mandelbrot
 
 function mandelbrotBoundCheck(
@@ -185,18 +189,14 @@ xmax2 = 0.308405910247503605302
 ymin2 = 0.025554220954294027410
 ymax2 = 0.025554245987221578418
 
-cmap3 = pumpkin(4)
+# cmap3b = pumpkin(4)
+cmap3c = cycle_cmap(:inferno, 50)
 scale3 = x -> x^-5
 maxIter3 = 5000
 xmin3 = 0.307567454839614329536
 xmax3 = 0.307567454903142214608
 ymin3 = 0.023304267108419154581
 ymax3 = 0.023304267156089095573
-
-xmin3b = BigFloat("0.307567454839614329536")
-xmax3b = BigFloat("0.307567454903142214608")
-ymin3b = BigFloat("0.023304267108419154581")
-ymax3b = BigFloat("0.023304267156089095573")
 
 cmap4 = cyclic_inferno(50)
 scale4 = x -> x^-5
@@ -216,16 +216,17 @@ ymax4b = BigFloat("0.0000077612881005550770")
 #%%
 
 displayMandelbrot(
-    xmin = xmin4b,
-    xmax = xmax4b,
-    ymin = ymin4b,
-    ymax = ymax4b,
-    width = w_lr,
-    height = h_lr,
-    colormap = cmap4,
-    maxIter = maxIter4,
+    xmin = xmin3,
+    xmax = xmax3,
+    ymin = ymin3,
+    ymax = ymax3,
+    width = w_4k,
+    height = h_4k,
+    colormap = cmap3c,
+    maxIter = maxIter3,
     verbose = true,
-    scale = scale4,
-    # filename = "mandelbrot-fractal/images/mandelbrot3b.png",
+    scale = scale3,
+    filename = "mandelbrot-fractal/images/mandelbrot3c.png",
 )
 #%%
+ColorGradient(repeat(cgrad(:inferno).colors, 5))
