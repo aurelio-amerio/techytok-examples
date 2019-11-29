@@ -107,7 +107,7 @@ Mandelbrot.computeMandelbrot!(fractal2_data)
 
 Mandelbrot.display_fractal(
     fractal2_data,
-    # filename = "mandelbrot-fractal/images/mandelbrot2.png"
+    filename = "mandelbrot-fractal/images/mandelbrot2.png"
 )
 
 #%% number 3
@@ -115,15 +115,14 @@ Mandelbrot.computeMandelbrot!(fractal3_data)
 
 Mandelbrot.display_fractal(
     fractal3_data,
-    # filename = "mandelbrot-fractal/images/mandelbrot3d.png"
+    filename = "mandelbrot-fractal/images/mandelbrot3d.png"
 )
-#%%
 
 #%% number 4
 Mandelbrot.computeMandelbrot!(fractal4_data)
 
 Mandelbrot.display_fractal(
     fractal4_data,
-    # filename = "mandelbrot-fractal/images/mandelbrot4.png"
+    filename = "mandelbrot-fractal/images/mandelbrot4.png"
 )
 #%%
