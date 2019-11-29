@@ -1,7 +1,6 @@
 
 module Mandelbrot
 
-using BenchmarkTools
 using Base.Threads
 using Plots
 using ProgressMeter
@@ -65,6 +64,11 @@ end
 
 function get_coords(fractal::FractalData)
     return fractal.xmin, fractal.xmax, fractal.ymin, fractal.ymax
+end
+
+function set_coords(fractal::FractalData, xmin, xmax, ymin, ymax)
+    fractal.xmin, fractal.xmax, fractal.ymin, fractal.ymax = xmin, xmax, ymin, ymax
+    return
 end
 
 # functions to move on the fractal
