@@ -5,14 +5,59 @@ using Plots
 using ProgressMeter
 # using ArrayFire
 #%%
-w_lr = 600
-h_lr = 400
+w_pw = 384
+h_pw = 216
+
+w_lr = 768
+h_lr = 432
 
 w_HD = 1920
 h_HD = 1080
 
 w_4k = 3840
 h_4k = 2160
+
+# structure to hold fractal data
+mutable struct FractalData{T<:Real}
+    xmin::T
+    xmax::T
+    ymin::T
+    ymax::T
+    width::Int
+    height::Int
+    fractal::Matrix{T}
+    colormap::ColorGradient
+    scale_function::Function
+
+    function FractalData{T}(
+        xmin::T,
+        xmax::T,
+        ymin::T,
+        ymax::T;
+        fractal = :none,
+        width::Int = w_lr,
+        height::Int = h_lr,
+        colormap = cgrad(:inferno),
+        scale_function::Function = x -> x
+    ) where T <: Real
+        img = zeros(T, height, width)
+        if fractal != :none
+            img = fractal
+        end
+        new(
+            xmin,
+            xmax,
+            ymin,
+            ymax,
+            width,
+            height,
+            img,
+            colormap,
+            scale_function
+        )
+    end
+end
+
 
 # custom colorbars, generate them using https://cssgradient.io/
 
@@ -29,10 +74,13 @@ function deep_space(nRepeat::Int = 1)
 end
 
 function alien_space(nRepeat::Int = 1)
-    return ColorGradient(repeat(["#1a072a", "#ff3e24", "#ffa805", "#7b00ff"], nRepeat))
+    return ColorGradient(repeat(
+        ["#1a072a", "#ff3e24", "#ffa805", "#7b00ff"],
+        nRepeat
+    ))
 end
 
-function cycle_cmap(cmap::Symbol, nRepeat::Int=1)
+function cycle_cmap(cmap::Symbol, nRepeat::Int = 1)
     return ColorGradient(repeat(cgrad(cmap).colors, 5))
 end
 
@@ -127,6 +175,7 @@ function computeMandelbrot(
 end
 function displayMandelbrot(
     ;
+    ;
     xmin::Real = -2.2,
     xmax::Real = 0.8,
     ymin::Real = -1.2,
@@ -151,6 +200,7 @@ function displayMandelbrot(
         zoom,
         verbose,
     )
+    mandelbrot_raw = img
     # img .+= 1 # remove zeros
     if scale == :log
         img = log.(img) # normalize image to have nicer colors
@@ -159,7 +209,7 @@ function displayMandelbrot(
     elseif typeof(scale) <: Function
         img = scale.(img)
     end
-    res = heatmap(
+    plot = heatmap(
         img,
         colorbar = :none,
         color = colormap,
@@ -171,9 +221,39 @@ function displayMandelbrot(
     if filename != :none
         savefig(filename)
     end
-    return res
+    return (plot, mandelbrot_raw)
 end
 
+function display_fractal(
+    fractal::Matrix,
+    colormap = :magma,
+    scale = :linear,
+    filename = :none
+)
+    img = deepcopy(fractal)
+    if scale == :log
+        img = log.(img) # normalize image to have nicer colors
+    elseif scale == :exp
+        img = exp.(img)
+    elseif typeof(scale) <: Function
+        img = scale.(img)
+    end
+
+    plot = heatmap(
+        img,
+        colorbar = :none,
+        color = colormap,
+        axis = false,
+        size = (size(img)[2], size(img)[1]),
+        grid = false,
+    )
+
+    if filename != :none
+        savefig(filename)
+    end
+
+    return plot
+end
 #%%
 cmap1 = :inferno
 xmin1 = -1.744453831814658538530
@@ -213,8 +293,7 @@ ymax4b = BigFloat("0.0000077612881005550770")
 
 
 
-#%%
-
+#%% number 4
 displayMandelbrot(
     xmin = xmin4b,
     xmax = xmax4b,
@@ -226,7 +305,5 @@ displayMandelbrot(
     maxIter = maxIter4,
     verbose = true,
     scale = scale4,
-    # filename = "mandelbrot-fractal/images/mandelbrot3c.png",
+    filename = "mandelbrot-fractal/images/mandelbrot4.png",
 )
-#%%
-ColorGradient(repeat(cgrad(:inferno).colors, 5))
