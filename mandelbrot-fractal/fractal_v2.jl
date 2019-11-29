@@ -114,7 +114,7 @@ Mandelbrot.computeMandelbrot!(fractal1_data)
 Mandelbrot.display_fractal(fractal1_data,
     # filename = "mandelbrot-fractal/images/mandelbrot1.png"
 )
-
+#%%
 Mandelbrot.display_fractal(
     fractal1_data,
     scale = log,
