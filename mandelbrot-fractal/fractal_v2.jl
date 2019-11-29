@@ -3,7 +3,7 @@ using BenchmarkTools
 using Base.Threads
 using Plots
 using ProgressMeter
-using ArrayFire
+# using ArrayFire
 #%%
 w_lr = 600
 h_lr = 400
