@@ -51,19 +51,19 @@ function mandelbrot_set(
     # the origin (0, 0). Hence we always start with c at the origin
 
     @threads for x = 1:w
-        for y = 1:h
+        zx = 1.5 * (x + x_off * (zoom - 1) - 3 * w / 4) / (0.5 * zoom * w)
+        @inbounds for y = 1:h
             # calculate the initial real and imaginary part of z,
             # based on the pixel location and zoom and position values
             # We use (x-3*w/4) instead of (x-w/2) to fully visualize the fractal
             # along the x-axis
 
-            zx = 1.5 * (x + x_off * (zoom - 1) - 3 * w / 4) / (0.5 * zoom * w)
             zy = 1.0 * (y + y_off * (zoom - 1) - h / 2) / (0.5 * zoom * h)
 
             z = complex(zx, zy)
             c = complex(0.0, 0.0)
 
-            for i = 1:niter
+            @inbounds for i = 1:niter
                 if abs(c) > 4
                     # i = convert(Int32, i)
                     # color = (i<<21) + (i<<10) + i*8
@@ -120,21 +120,21 @@ function mandelbrot_set(
     # the origin (0, 0). Hence we always start with c at the origin
 
     @threads for x = 1:w
-        for y = 1:h
+        zx = BigFloat(1.5 * (x + x_off * (zoom - 1) - 3 * w / 4) /
+                      (0.5 * zoom * w))
+        @inbounds for y = 1:h
             # calculate the initial real and imaginary part of z,
             # based on the pixel location and zoom and position values
             # We use (x-3*w/4) instead of (x-w/2) to fully visualize the fractal
             # along the x-axis
 
-            zx = BigFloat(1.5 * (x + x_off * (zoom - 1) - 3 * w / 4) /
-                          (0.5 * zoom * w))
             zy = BigFloat(1.0 * (y + y_off * (zoom - 1) - h / 2) /
                           (0.5 * zoom * h))
 
             z = complex(zx, zy)
             c = complex(BigFloat(0), BigFloat(0))
 
-            for i = 1:niter
+            @inbounds for i = 1:niter
                 if abs(c) > 4
                     # i = convert(Int32, i)
                     # color = (i<<21) + (i<<10) + i*8
@@ -264,6 +264,8 @@ zoom = 1e5
 x_off = -mult * 247.163795912061
 y_off = -mult * 109.99932219994
 
+mandelbrot_set(2048, 2048, zoom, x_off, y_off, 500, false)
+
 # niter=2500
 mandelbrot_display(
     width = width,
@@ -271,7 +273,7 @@ mandelbrot_display(
     zoom = zoom,
     x_off = x_off,
     y_off = y_off,
-    filename = "mandelbrot-fractal/mandelbrot_tmp.png",
+    # filename = "mandelbrot-fractal/mandelbrot_tmp.png",
 )
 # savefig("mandelbrot-fractal/mandelbrot_tmp.png")
 # println("saved!")
