@@ -28,7 +28,7 @@ function deep_space(nRepeat::Int = 1)
     return ColorGradient(repeat(["#000000", "#193e7c", "#dde2ff"], nRepeat))
 end
 
-function cyclic_inferno(nRepeat::Int = 1)
+function alien_space(nRepeat::Int = 1)
     return ColorGradient(repeat(["#1a072a", "#ff3e24", "#ffa805", "#7b00ff"], nRepeat))
 end
 
@@ -198,7 +198,7 @@ xmax3 = 0.307567454903142214608
 ymin3 = 0.023304267108419154581
 ymax3 = 0.023304267156089095573
 
-cmap4 = cyclic_inferno(50)
+cmap4 = alien_space(50)
 scale4 = x -> x^-5
 maxIter4 = 50000
 xmin4 = 0.2503006273651145643691
@@ -216,17 +216,17 @@ ymax4b = BigFloat("0.0000077612881005550770")
 #%%
 
 displayMandelbrot(
-    xmin = xmin3,
-    xmax = xmax3,
-    ymin = ymin3,
-    ymax = ymax3,
-    width = w_4k,
-    height = h_4k,
-    colormap = cmap3c,
-    maxIter = maxIter3,
+    xmin = xmin4b,
+    xmax = xmax4b,
+    ymin = ymin4b,
+    ymax = ymax4b,
+    width = w_HD,
+    height = h_HD,
+    colormap = cmap4,
+    maxIter = maxIter4,
     verbose = true,
-    scale = scale3,
-    filename = "mandelbrot-fractal/images/mandelbrot3c.png",
+    scale = scale4,
+    # filename = "mandelbrot-fractal/images/mandelbrot3c.png",
 )
 #%%
 ColorGradient(repeat(cgrad(:inferno).colors, 5))
