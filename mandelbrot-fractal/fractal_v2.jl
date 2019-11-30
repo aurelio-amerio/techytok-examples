@@ -11,7 +11,7 @@ xmax = 0.8
 ymin = -1.2
 ymax = 1.2
 
-fractal0_data = Mandelbrot.FractalData{Float64}(
+fractal0_data = Mandelbrot.FractalData(
     xmin,
     xmax,
     ymin,
@@ -23,13 +23,14 @@ fractal0_data = Mandelbrot.FractalData{Float64}(
     scale_function = x -> x,
 )
 
+
 cmap1 = Mandelbrot.cycle_cmap(:inferno, 5)
 xmin1 = -1.744453831814658538530
 xmax1 = -1.744449945239591698236
 ymin1 = 0.022017835126305555133
 ymax1 = 0.022020017997233506531
 
-fractal1_data = Mandelbrot.FractalData{Float64}(
+fractal1_data = Mandelbrot.FractalData(
     xmin1,
     xmax1,
     ymin1,
@@ -49,7 +50,7 @@ xmax2 = 0.308405910247503605302
 ymin2 = 0.025554220954294027410
 ymax2 = 0.025554245987221578418
 
-fractal2_data = Mandelbrot.FractalData{Float64}(
+fractal2_data = Mandelbrot.FractalData(
     xmin2,
     xmax2,
     ymin2,
@@ -71,7 +72,7 @@ xmax3 = 0.307567454903142214608
 ymin3 = 0.023304267108419154581
 ymax3 = 0.023304267156089095573
 
-fractal3_data = Mandelbrot.FractalData{Float64}(
+fractal3_data = Mandelbrot.FractalData(
     xmin3,
     xmax3,
     ymin3,
@@ -96,7 +97,7 @@ xmax4b = BigFloat("0.2503006273651201870891")
 ymin4b = BigFloat("0.0000077612880963380370")
 ymax4b = BigFloat("0.0000077612881005550770")
 
-fractal4b_data = Mandelbrot.FractalData{BigFloat}(
+fractal4b_data = Mandelbrot.FractalData(
     xmin4b,
     xmax4b,
     ymin4b,
@@ -143,15 +144,21 @@ Mandelbrot.display_fractal(fractal4_data,
 )
 #%% navigation
 fractal0_data.maxIter = 500
-Mandelbrot.preview_fractal(fractal0_data, scale = :linear)
+Mandelbrot.preview_fractal(fractal3_data, scale = :linear)
 Mandelbrot.move_center!(fractal0_data, -1, 0)
 Mandelbrot.zoom!(fractal0_data, 1.5)
 Mandelbrot.get_coords(fractal0_data)
 Mandelbrot.set_coords(fractal0_data, (-1.6761523437499999, -1.6722460937499999, -0.0015624999999999999, 0.0015624999999999999)...)
 #%%
-Mandelbrot.computeMandelbrot!(fractal0_data)
+@code_warntype Mandelbrot.computeMandelbrot!(fractal0_data)
 fractal0_data.colormap = Mandelbrot.cycle_cmap(:algae, 42)
 Mandelbrot.display_fractal(
     fractal0_data,
     # filename = "mandelbrot-fractal/images/mandelbrot_navigation.png",
 )
+
+#%%
+Mandelbrot.preview_fractal(fractal4b_data)
+Mandelbrot.zoom!(fractal3_data, 5)
+fractal3_data
+Mandelbrot.move_center!(fractal3_data, 70, 0)

@@ -6,8 +6,8 @@ using Plots
 using ProgressMeter
 # using ArrayFire
 
-w_pw = 384
-h_pw = 216
+w_pw = 256
+h_pw = 144
 
 w_lr = 768
 h_lr = 432
@@ -19,31 +19,31 @@ w_4k = 3840
 h_4k = 2160
 
 # structure to hold fractal data
-mutable struct FractalData{T<:Real}
-    xmin::T
-    xmax::T
-    ymin::T
-    ymax::T
+mutable struct FractalData
+    xmin::Union{Float64, BigFloat}
+    xmax::Union{Float64, BigFloat}
+    ymin::Union{Float64, BigFloat}
+    ymax::Union{Float64, BigFloat}
     width::Int
     height::Int
-    fractal::Matrix{T}
+    fractal::Matrix{Float64}
     maxIter::Int
     colormap::ColorGradient
     scale_function::Function
 
-    function FractalData{T}(
-        xmin::T,
-        xmax::T,
-        ymin::T,
-        ymax::T;
+    function FractalData(
+        xmin::Union{Float64, BigFloat},
+        xmax::Union{Float64, BigFloat},
+        ymin::Union{Float64, BigFloat},
+        ymax::Union{Float64, BigFloat};
         width::Int = w_lr,
         height::Int = h_lr,
         fractal = :none,
         maxIter = 1500,
         colormap = cgrad(:inferno),
         scale_function::Function = x -> x,
-    ) where {T<:Real}
-        img = zeros(T, height, width)
+    ) #where {T<:Real}
+        img = zeros(Float64, height, width)
         if fractal != :none
             img = fractal
         end
@@ -67,7 +67,10 @@ function get_coords(fractal::FractalData)
 end
 
 function set_coords(fractal::FractalData, xmin, xmax, ymin, ymax)
-    fractal.xmin, fractal.xmax, fractal.ymin, fractal.ymax = xmin, xmax, ymin, ymax
+    fractal.xmin, fractal.xmax, fractal.ymin, fractal.ymax = xmin,
+        xmax,
+        ymin,
+        ymax
     return
 end
 
@@ -126,6 +129,17 @@ function zoom!(fractal::FractalData, zoom_factor::Real)
     fractal.ymin = yc - height / 2
     fractal.ymax = yc + height / 2
 
+    if typeof(fractal.xmax) != BigFloat &&
+       2 + ceil(Int, -log10(width / fractal.width)) > 16
+
+        @info "Upgrading fractal to high resolution computations"
+
+        fractal.xmin = BigFloat(fractal.xmin)
+        fractal.xmax = BigFloat(fractal.xmax)
+        fractal.ymin = BigFloat(fractal.ymin)
+        fractal.ymax = BigFloat(fractal.ymax)
+    end
+
     return preview_fractal(fractal) #preview changes
 end
 
@@ -152,6 +166,15 @@ end
 
 function cycle_cmap(cmap::Symbol, nRepeat::Int = 1)
     return ColorGradient(repeat(cgrad(cmap).colors, nRepeat))
+end
+
+# utility functions to convert from bits to precision digits
+function bits_to_digits(bits::Int)
+    return floor(bits * log10(2))
+end
+
+function digits_to_bits(digits::Int)
+    return ceil(Int, digits / log10(2))
 end
 
 # compute mandelbrot
@@ -181,13 +204,13 @@ function mandelbrotBoundCheck(
 end
 
 function computeMandelbrot(
-    xmin::Real = -2.2,
-    xmax::Real = 0.8,
-    ymin::Real = -1.2,
-    ymax::Real = 1.2,
-    width::Int = 800,
-    height::Int = 600,
-    maxIter::Int = 1000,
+    xmin::Float64,
+    xmax::Float64,
+    ymin::Float64,
+    ymax::Float64,
+    width::Int = w_lr,
+    height::Int = h_lr,
+    maxIter::Int = 100,
     verbose = true,
 )
     if verbose
@@ -220,6 +243,58 @@ function computeMandelbrot(
             Threads.lock(l)
             update!(p, jj[])
             Threads.unlock(l)
+        end
+    end
+    return pixels
+end
+
+function computeMandelbrot(
+    xmin::BigFloat,
+    xmax::BigFloat,
+    ymin::BigFloat,
+    ymax::BigFloat,
+    width::Int = w_lr,
+    height::Int = h_lr,
+    maxIter::Int = 100,
+    verbose = true,
+)
+    if verbose
+        p = Progress(width)
+        update!(p, 0)
+        jj = Threads.Atomic{Int}(0)
+        l = Threads.SpinLock()
+    end
+
+    xc = (xmax + xmin) / 2
+    yc = (ymax + ymin) / 2
+    dx = (xmax - xmin) / width
+    dy = (ymax - ymin) / height
+
+    x_arr = range(xmin, stop = xmax, length = width)
+    y_arr = range(ymin, stop = ymax, length = height)
+
+    pixels = zeros(typeof(xmin), height, width) #pixels[y,x]
+
+    # compute the required precision to have accurate computation of the fractal
+    digits = 2 + ceil(Int, -log10(dx))
+    bits = digits_to_bits(digits)
+    bits = max(bits, 53) # use at least double precision
+    @info "Using $digits digits"
+    setprecision(bits) do
+        @threads for x_j = 1:width
+            @inbounds for y_i = 1:height
+                pixels[y_i, x_j] = mandelbrotBoundCheck(
+                    x_arr[x_j],
+                    y_arr[y_i],
+                    maxIter,
+                )
+            end
+            if verbose
+                Threads.atomic_add!(jj, 1)
+                Threads.lock(l)
+                update!(p, jj[])
+                Threads.unlock(l)
+            end
         end
     end
     return pixels
