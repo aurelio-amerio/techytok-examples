@@ -1,2 +1,2 @@
 # Multiprocessing in Julia
-Material for the tutorial found at <https://techytok.ml/multiprocessing-in-julia-module/>
+Material for the tutorial found at <https://techytok.com/multiprocessing-in-julia-module/>
