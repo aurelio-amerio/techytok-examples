@@ -1,0 +1,9 @@
+name = "TestPackage1"
+uuid = "6c3cb688-2b95-4208-a856-5a3103341cd2"
+authors = ["Aurelio Amerio <aure.amerio@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
