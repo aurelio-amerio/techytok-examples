@@ -1,2 +1,2 @@
 # Techytok! Let's get busy!
-A set of code examples for https://techytok.ml
+A set of code examples for https://techytok.com
