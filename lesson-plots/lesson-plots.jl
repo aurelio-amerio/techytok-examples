@@ -28,8 +28,8 @@ plotly()
 x=1:0.1:3*π
 y=1:0.1:3*π
 
-xx = reshape([xi for xi in x for yj in y],  length(x), length(y))
-yy = reshape([yj for xi in x for yj in y],  length(x), length(y))
+xx = reshape([xi for xi in x for yj in y],  length(y), length(x))
+yy = reshape([yj for xi in x for yj in y],  length(y), length(x))
 zz = sin.(xx).*cos.(yy)
 plot3d(xx,yy,zz, label=:none, st = :surface)
 plot!(xlab="x", ylab="y", zlab="sin(x)*cos(y)")
