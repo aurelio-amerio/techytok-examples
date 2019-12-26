@@ -33,18 +33,18 @@ ricky.headbandColor
 
 #%%
 function introduceMe(person::Person)
-    println("Hello, my name is $(person.name)")
+    println("Hello, my name is $(person.name).")
 end
 
 function introduceMe(person::Musician)
-    println("Hello, my name is $(person.name) and I play $(person.instrument)")
+    println("Hello, my name is $(person.name) and I play $(person.instrument).")
 end
 
 function introduceMe(person::Rockstar)
 	if person.instrument == "Voice"
-		println("Hello, my name is $(person.name) and I sing")
+		println("Hello, my name is $(person.name) and I sing.")
 	else
-		println("Hello, my name is $(person.name) and I play $(person.instrument)")
+		println("Hello, my name is $(person.name) and I play $(person.instrument).")
 	end
 
 	println("My band name is $(person.bandName) and my favourite headband colour is $(person.headbandColor)!")
