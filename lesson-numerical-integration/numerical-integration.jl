@@ -2,7 +2,6 @@ using Pkg
 Pkg.add("QuadGK")
 
 using QuadGK
-using BenchmarkTools
 
 
 func1(x) = exp(-x^2)

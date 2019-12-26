@@ -4,9 +4,11 @@ using Unitful
 
 one_meter = 1u"m"
 
-uconvert(u"km", one_meter)
+b = uconvert(u"km", one_meter)
+b
+one_meter
 
-ustrip(u"m", one_meter)
+c = ustrip(u"m", one_meter)
 
 function compute_speed(Δx::Unitful.Length, Δt::Unitful.Time)
     return uconvert(u"m/s", Δx/Δt)

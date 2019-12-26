@@ -8,7 +8,7 @@ mutable struct Rockstar <: Musician
 	name::String
 	instrument::String
 	bandName::String
-	bandanaColor::String
+	headbandColor::String
 end
 
 struct ClassicMusician <: Musician
@@ -27,9 +27,9 @@ aure.sleepHours = 8
 aure_musician = ClassicMusician("Aurelio", "Violin")
 aure_musician.instrument="Cello"
 
-riky = Rockstar("Riccardo", "Voice", "Black Lotus", "red", 2)
+ricky = Rockstar("Riccardo", "Voice", "Black Lotus", "red", 2)
 
-riky.bandanaColor
+ricky.headbandColor
 
 #%%
 function introduceMe(person::Person)
@@ -47,14 +47,14 @@ function introduceMe(person::Rockstar)
 		println("Hello, my name is $(person.name) and I play $(person.instrument)")
 	end
 
-	println("My band name is $(person.bandName) and my favourite bandana colour is $(person.bandanaColor)!")
+	println("My band name is $(person.bandName) and my favourite headband colour is $(person.headbandColor)!")
 end
 #%%
 introduceMe(aure)
 
 introduceMe(aure_musician)
 
-introduceMe(riky)
+introduceMe(ricky)
 
 #%%
 mutable struct MyData
