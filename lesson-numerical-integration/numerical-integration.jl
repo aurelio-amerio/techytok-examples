@@ -21,6 +21,10 @@ abs(res - sqrt(π)) / sqrt(π)
 sqrt(π)
 
 #%%
+
+res, err = quadgk(func1, BigFloat(-Inf), BigFloat(Inf), rtol = 1e-15, order=12)
+abs(res - sqrt(BigFloat(π))) / sqrt(BigFloat(π))
+#%%
 func2(x, y, z) = x + y^3 + sin(z)
 
 x = 5
