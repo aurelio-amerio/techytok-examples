@@ -204,3 +204,16 @@ end
         arr1[i,j] = 1
     end
 end
+
+#%%
+function test_positional(a, b, c)
+    return a + b + c
+end
+
+function test_keyword(;a, b, c)
+    return a + b + c
+end
+
+@code_llvm test_positional(1,2,3)
+
+@code_llvm test_keyword(a=1,b=2,c=3)

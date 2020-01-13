@@ -77,3 +77,23 @@ data_dict2["x"]==x
 
 
 basename("files/test-file_restored.jld")
+
+#%%
+struct Person
+    height::Float64
+    weight::Float64
+    BMI::Float64
+
+    function Person(heightInMeters::Float64, weightInKilos::Float64)
+        BMI = weightInKilos / heightInMeters^2
+        new(heightInMeters, weightInKilos, BMI)
+    end
+
+    function Person(;heightInMeters::Float64, weightInKilos::Float64)
+        BMI = weightInKilos / heightInMeters^2
+        new(heightInMeters, weightInKilos, BMI)
+    end
+end
+
+bob = Person(heightInMeters=1.84, weightInKilos=84.0)
+carl = Person(1.84, 84.0)
