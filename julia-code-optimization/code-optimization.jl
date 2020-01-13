@@ -217,3 +217,8 @@ end
 @code_llvm test_positional(1,2,3)
 
 @code_llvm test_keyword(a=1,b=2,c=3)
+
+
+@btime test_positional(1,2,3)
+
+@btime test_keyword(a=1,b=2,c=3)
