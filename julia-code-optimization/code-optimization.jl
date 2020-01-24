@@ -113,15 +113,24 @@ Juno.Profile.print()
 
 #%%
 using BenchmarkTools
+
 arr1=zeros(10000)
 
-@btime for i in 1:10000
-    arr1[i] = 1
+function put1!(arr)
+    for i in 1:length(arr)
+        arr[i]=1.0
+    end
 end
 
-@btime @inbounds for i in 1:10000
-    arr1[i] = 1
+function put1_inbounds!(arr)
+    @inbounds for i in 1:length(arr)
+        arr[i]=1.0
+    end
 end
+
+@btime put1!($arr1)
+
+@btime put1_inbounds!($arr1)
 
 #%%
 
