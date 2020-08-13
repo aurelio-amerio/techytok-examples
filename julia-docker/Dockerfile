@@ -1,4 +1,4 @@
-FROM julia:1.0.3
+FROM julia:latest
 MAINTAINER Aurelio Amerio
 
 ########################################################
