@@ -1,0 +1,8 @@
+name = "TestPackage1"
+uuid = "6c3cb688-2b95-4208-a856-5a3103341cd2"
+authors = ["Aurelio Amerio <aure.amerio@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
